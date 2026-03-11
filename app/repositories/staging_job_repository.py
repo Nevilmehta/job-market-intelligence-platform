@@ -31,3 +31,8 @@ class StagingJobRepository:
         self.db.commit()
         self.db.refresh(staging_job)
         return staging_job
+
+    def get_all_staging_jobs(self):
+        return (
+            self.db.query(StagingJob).order_by(StagingJob.id.asc()).all()
+        )
