@@ -1,6 +1,6 @@
 from datetime import date
 from sqlalchemy.orm import Session
-from app.models.analytics import JobDailyCount, TopCompany
+from app.models.analytics import JobDailyCount, TopCompany, TopSkill, SalaryTrend
 
 class AnalyticsRepository:
     def __init__(self, db:Session):
@@ -12,6 +12,14 @@ class AnalyticsRepository:
 
     def clear_top_companies(self):
         self.db.query(TopCompany).delete()
+        self.db.commit()
+
+    def clear_top_skills(self):
+        self.db.query(TopSkill).delete()
+        self.db.commit()
+
+    def clear_salary_trends(self):
+        self.db.query(SalaryTrend).delete()
         self.db.commit()
 
     def create_job_daily_count(self, metric_date: date, job_count: int):
@@ -28,8 +36,36 @@ class AnalyticsRepository:
         self.db.refresh(row)
         return row
 
+    def create_top_skill(self, skill: str, demand_count: int) -> TopSkill:
+        row = TopSkill(
+            skill=skill,
+            demand_count=demand_count,
+        )
+        self.db.add(row)
+        self.db.commit()
+        self.db.refresh(row)
+        return row
+
+    def create_salary_trend(self, metric_date: date, average_salary: int, currency: str|None, job_count: int):
+        row = SalaryTrend(
+            metric_date=metric_date,
+            average_salary=average_salary,
+            currency=currency,
+            job_count=job_count
+        )
+        self.db.add(row)
+        self.db.commit()
+        self.db.refresh(row)
+        return row
+
     def get_job_daily_counts(self):
         return (self.db.query(JobDailyCount).order_by(JobDailyCount.metric_date.asc()).all())
 
     def get_top_companies(self):
         return (self.db.query(TopCompany).order_by(TopCompany.job_count.desc(), TopCompany.company.asc()).all())
+
+    def get_top_skills(self):
+        return (self.db.query(TopSkill).order_by(TopSkill.demand_count.desc(), TopSkill.skill.asc()).all())
+
+    def get_salary_trends(self):
+        return (self.db.query(SalaryTrend).order_by(SalaryTrend.metric_date.asc()).all())

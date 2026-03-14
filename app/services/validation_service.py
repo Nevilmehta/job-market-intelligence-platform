@@ -1,3 +1,4 @@
+import re
 from sqlalchemy.orm import Session
 from app.repositories.raw_job_repository import RawJobRepository
 from app.repositories.rejected_job_repository import RejectedJobRepository
@@ -24,6 +25,34 @@ class ValidationService:
                 return False, f"Missing or empty required field: {field}"
 
         return True, None
+
+    def _parse_salary(self, salary_text: str|None):
+        if not salary_text or not isinstance(salary_text, str):
+            return None, None, None
+
+        currency=None
+        if "£" in salary_text:
+            currency = "GBP"
+        elif "$" in salary_text:
+            currency = "USD"
+        elif "€" in salary_text:
+            currency = "EUR"
+
+        numbers = re.findall(r"\d[\d,]*", salary_text)
+        parsed_numbers = []
+
+        for num in numbers:
+            cleaned = num.replace(",", "")
+            if cleaned.isdigit():
+                parsed_numbers.append(int(cleaned))
+
+        if not parsed_numbers:
+            return None, None, currency
+
+        if len(parsed_numbers)==1:
+            return parsed_numbers[0], parsed_numbers[0], currency
+
+        return min(parsed_numbers), max(parsed_numbers), currency
 
     # Now we wrap pipeline execution with job tracking.
     # Now we process only unprocessed records and mark them after handling. P6
@@ -55,6 +84,9 @@ class ValidationService:
                     self.raw_job_repository.mark_as_processed(raw_job)
                     rejected_records += 1
                     continue
+
+                salary_text = payload.get("salary")
+                salary_min, salary_max, salary_currency = self._parse_salary(salary_text)
                 
                 self.staging_job_repository.create_staging_job(
                     source=raw_job.source,
@@ -62,7 +94,10 @@ class ValidationService:
                     title=payload.get("title"),
                     company=payload.get("company"),
                     location=payload.get("location"),
-                    salary_text=payload.get("salary"),
+                    salary_text=salary_text,
+                    salary_min=salary_min,
+                    salary_max=salary_max,
+                    salary_currency=salary_currency,
                     technologies=payload.get("technologies"),
                     posted_date=payload.get("posted_date")
                 )

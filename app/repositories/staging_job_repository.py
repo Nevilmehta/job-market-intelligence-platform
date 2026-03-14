@@ -14,6 +14,9 @@ class StagingJobRepository:
         company: str,
         location: str | None,
         salary_text: str | None,
+        salary_min: int | None,
+        salary_max: int | None,
+        salary_currency: str | None,
         technologies: list[str] | None,
         posted_date: str | None
     ):
@@ -24,6 +27,9 @@ class StagingJobRepository:
             company=company,
             location=location,
             salary_text=salary_text,
+            salary_min=salary_min,
+            salary_max=salary_max,
+            salary_currency=salary_currency,
             technologies=technologies,
             posted_date=posted_date,
         )

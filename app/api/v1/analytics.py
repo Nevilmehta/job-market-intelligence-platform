@@ -7,7 +7,11 @@ from app.schemas.analytics import (
     JobDailyCountListResponse,
     JobDailyCountResponse,
     TopCompanyListResponse,
-    TopCompanyResponse
+    TopCompanyResponse,
+    TopSkillListResponse,
+    TopSkillResponse,
+    SalaryTrendResponse,
+    SalaryTrendListResponse
 )
 from app.services.analytics_service import AnalyticsService
 
@@ -43,6 +47,38 @@ def get_top_companies(db: Session = Depends(get_db)):
         items = [
             TopCompanyResponse(
                 company=row.company,
+                job_count=row.job_count
+            )
+            for row in rows
+        ]
+    )
+
+@router.get("/top-skills", response_model=TopSkillListResponse)
+def get_top_skills(db: Session = Depends(get_db)):
+    service = AnalyticsService(db)
+    rows = service.get_top_skills()
+
+    return TopSkillListResponse(
+        items = [
+            TopSkillResponse(
+                skill=row.skill,
+                demand_count=row.demand_count
+            )
+            for row in rows
+        ]
+    )
+
+@router.get("/salary-trends", response_model=SalaryTrendListResponse)
+def get_salary_trends(db:Session = Depends(get_db)):
+    service = AnalyticsService(db)
+    rows = service.get_salary_trends()
+
+    return SalaryTrendListResponse(
+        items=[
+            SalaryTrendResponse(
+                metric_date=row.metric_date,
+                average_salary=row.average_salary,
+                currency=row.currency,
                 job_count=row.job_count
             )
             for row in rows

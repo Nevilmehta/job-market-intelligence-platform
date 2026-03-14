@@ -13,7 +13,12 @@ class StagingJob(Base):
     title = Column(String, nullable=False, index=True)
     company = Column(String, nullable=False, index=True)
     location = Column(String, nullable=True, index=True)
+
     salary_text = Column(String, nullable=True)
+    salary_min = Column(Integer, nullable=True)
+    salary_max = Column(Integer, nullable=True)
+    salary_currency = Column(String, nullable=True)
+
     technologies = Column(JSONB, nullable=True)
     posted_date = Column(String, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
