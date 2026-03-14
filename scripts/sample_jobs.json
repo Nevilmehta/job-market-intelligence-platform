@@ -1,0 +1,122 @@
+[
+  {
+    "source": "linkedin",
+    "external_id": "job-1001",
+    "payload": {
+      "title": "Backend Engineer",
+      "company": "Acme Corp",
+      "location": "London",
+      "salary": "£70000 - £90000",
+      "technologies": ["Python", "FastAPI", "PostgreSQL", "Docker"],
+      "posted_date": "2026-03-01"
+    }
+  },
+  {
+    "source": "indeed",
+    "external_id": "job-1002",
+    "payload": {
+      "title": "Senior Python Developer",
+      "company": "Beta Tech",
+      "location": "Manchester",
+      "salary": "£80000 - £100000",
+      "technologies": ["Python", "Django", "PostgreSQL", "Redis"],
+      "posted_date": "2026-03-01"
+    }
+  },
+  {
+    "source": "linkedin",
+    "external_id": "job-1003",
+    "payload": {
+      "title": "Data Engineer",
+      "company": "DataWorks",
+      "location": "Birmingham",
+      "salary": "£65000 - £85000",
+      "technologies": ["Python", "SQL", "Airflow", "PostgreSQL"],
+      "posted_date": "2026-03-02"
+    }
+  },
+  {
+    "source": "reed",
+    "external_id": "job-1004",
+    "payload": {
+      "title": "Backend Developer",
+      "company": "Acme Corp",
+      "location": "London",
+      "salary": "£60000 - £80000",
+      "technologies": ["Python", "FastAPI", "MySQL", "Docker"],
+      "posted_date": "2026-03-02"
+    }
+  },
+  {
+    "source": "linkedin",
+    "external_id": "job-1005",
+    "payload": {
+      "title": "Software Engineer",
+      "company": "Nova Systems",
+      "location": "Leeds",
+      "salary": "£55000 - £75000",
+      "technologies": ["Python", "Flask", "PostgreSQL", "GitHub Actions"],
+      "posted_date": "2026-03-02"
+    }
+  },
+  {
+    "source": "linkedin",
+    "external_id": "job-1006",
+    "payload": {
+      "title": "Platform Engineer",
+      "company": "CloudNest",
+      "location": "London",
+      "salary": "£85000 - £110000",
+      "technologies": ["Python", "Docker", "Kubernetes", "Redis"],
+      "posted_date": "2026-03-03"
+    }
+  },
+  {
+    "source": "indeed",
+    "external_id": "job-1007",
+    "payload": {
+      "title": "API Engineer",
+      "company": "Acme Corp",
+      "location": "Bristol",
+      "salary": "£68000 - £88000",
+      "technologies": ["Python", "FastAPI", "Redis", "PostgreSQL"],
+      "posted_date": "2026-03-03"
+    }
+  },
+  {
+    "source": "reed",
+    "external_id": "job-1008",
+    "payload": {
+      "title": "Data Platform Engineer",
+      "company": "DataWorks",
+      "location": "London",
+      "salary": "£90000 - £115000",
+      "technologies": ["Python", "SQL", "Airflow", "Docker"],
+      "posted_date": "2026-03-03"
+    }
+  },
+  {
+    "source": "linkedin",
+    "external_id": "job-1009",
+    "payload": {
+      "title": "Python Backend Engineer",
+      "company": "Beta Tech",
+      "location": "Manchester",
+      "salary": "£72000 - £92000",
+      "technologies": ["Python", "FastAPI", "Redis", "Docker"],
+      "posted_date": "2026-03-04"
+    }
+  },
+  {
+    "source": "indeed",
+    "external_id": "job-1010",
+    "payload": {
+      "title": "Software Developer",
+      "company": "Nova Systems",
+      "location": "Liverpool",
+      "salary": "£50000 - £70000",
+      "technologies": ["Python", "Flask", "MySQL", "Docker"],
+      "posted_date": "2026-03-04"
+    }
+  }
+]
