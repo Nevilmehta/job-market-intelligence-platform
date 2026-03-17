@@ -41,6 +41,15 @@ class RawJobRepository:
         self.db.refresh(raw_job)
         return raw_job
 
+    def count_all(self):
+        return self.db.query(RawJob).count()
+
+    def count_processed(self):
+        return self.db.query(RawJob).filter(RawJob.is_processed.is_(True)).count()
+
+    def count_unprocessed(self):
+        return self.db.query(RawJob).filter(RawJob.is_processed.is_(False)).count()
+
     # we need methods to fetch raw jobs for validation
     # def get_all_raw_jobs(self):
     #     return self.db.query(RawJob).order_by(RawJob.id.asc()).all()
