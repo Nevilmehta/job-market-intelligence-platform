@@ -1,5 +1,5 @@
 from collections import Counter, defaultdict
-from datetime import datetime
+from datetime import date, datetime
 from sqlalchemy.orm import Session
 
 from app.repositories.analytics_repository import AnalyticsRepository
@@ -125,8 +125,11 @@ class AnalyticsService:
             )
             raise
 
-    def get_job_daily_counts(self):
-        return self.analytics_repository.get_job_daily_counts()
+    def get_job_daily_counts(self, date_from: date|None=None, date_to: date|None=None):
+        return self.analytics_repository.get_job_daily_counts(
+            date_from=date_from,
+            date_to=date_to
+        )
 
     def get_top_companies(self):
         return self.analytics_repository.get_top_companies()
@@ -134,5 +137,8 @@ class AnalyticsService:
     def get_top_skills(self):
         return self.analytics_repository.get_top_skills()
 
-    def get_salary_trends(self):
-        return self.analytics_repository.get_salary_trends()
+    def get_salary_trends(self, date_from: date|None=None, date_to: date|None=None):
+        return self.analytics_repository.get_salary_trends(
+            date_from=date_from,
+            date_to=date_to
+        )

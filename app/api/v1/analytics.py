@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
+from datetime import date
 
 from app.core.database import get_db
 from app.schemas.analytics import (
@@ -25,9 +26,9 @@ def generate_analytics(db: Session = Depends(get_db)):
     return AnalyticsGenerationResponse(**result)
 
 @router.get("/job-daily-counts", response_model=JobDailyCountListResponse)
-def get_job_daily_counts(db: Session = Depends(get_db)):
+def get_job_daily_counts(date_from: date|None=None, date_to: date|None=None, db: Session = Depends(get_db)):
     service = AnalyticsService(db)
-    rows = service.get_job_daily_counts()
+    rows = service.get_job_daily_counts(date_from=date_from, date_to=date_to)
     return JobDailyCountListResponse(
         items=[
             JobDailyCountResponse(
@@ -69,9 +70,9 @@ def get_top_skills(db: Session = Depends(get_db)):
     )
 
 @router.get("/salary-trends", response_model=SalaryTrendListResponse)
-def get_salary_trends(db:Session = Depends(get_db)):
+def get_salary_trends(date_from: date|None=None, date_to: date|None=None, db:Session = Depends(get_db)):
     service = AnalyticsService(db)
-    rows = service.get_salary_trends()
+    rows = service.get_salary_trends(date_from=date_from, date_to=date_to)
 
     return SalaryTrendListResponse(
         items=[

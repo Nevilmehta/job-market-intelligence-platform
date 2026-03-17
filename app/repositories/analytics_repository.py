@@ -58,8 +58,14 @@ class AnalyticsRepository:
         self.db.refresh(row)
         return row
 
-    def get_job_daily_counts(self):
-        return (self.db.query(JobDailyCount).order_by(JobDailyCount.metric_date.asc()).all())
+    def get_job_daily_counts(self, date_from: date|None=None, date_to: date|None=None):
+        query = self.db.query(JobDailyCount)
+        if date_from:
+            query = query.filter(JobDailyCount.metric_date>=date_from)
+        if date_to:
+            query = query.filter(JobDailyCount.metric_date<=date_to)
+
+        return query.order_by(JobDailyCount.metric_date.asc()).all()
 
     def get_top_companies(self):
         return (self.db.query(TopCompany).order_by(TopCompany.job_count.desc(), TopCompany.company.asc()).all())
@@ -67,5 +73,11 @@ class AnalyticsRepository:
     def get_top_skills(self):
         return (self.db.query(TopSkill).order_by(TopSkill.demand_count.desc(), TopSkill.skill.asc()).all())
 
-    def get_salary_trends(self):
-        return (self.db.query(SalaryTrend).order_by(SalaryTrend.metric_date.asc()).all())
+    def get_salary_trends(self, date_from: date|None=None, date_to: date|None=None):
+        query = self.db.query(SalaryTrend)
+        if date_from:
+            query = query.filter(SalaryTrend.metric_date>=date_from)
+        if date_to:
+            query = query.filter(SalaryTrend.metric_date<=date_to)
+
+        return query.order_by(SalaryTrend.metric_date.asc()).all()
