@@ -2,7 +2,13 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
-from app.schemas.pipeline import (ValidationPipelineResponse, ETLJobRunListResponse, ETLJobRunResponse)
+from app.schemas.pipeline import (
+    ValidationPipelineResponse,
+    ETLJobRunListResponse,
+    ETLJobRunResponse,
+    AnalyticsBackfillRequest,
+    AnalyticsBackfillResponse
+    )
 from app.services.validation_service import ValidationService
 from app.services.pipeline_service import PipelineService
 
@@ -14,6 +20,15 @@ def validate_raw_jobs(db: Session = Depends(get_db)):
     service = ValidationService(db)
     result = service.process_raw_jobs()
     return ValidationPipelineResponse(**result)
+
+@router.post("/backfill-analytics", response_model=AnalyticsBackfillResponse)
+def backfill_analytics(request: AnalyticsBackfillRequest, db: Session = Depends(get_db)):
+    service = PipelineService(db)
+    result = service.backfill_analytics(
+        date_from=request.date_from,
+        date_to=request.date_to
+    )
+    return AnalyticsBackfillResponse(**result)
 
 @router.get("/runs", response_model=ETLJobRunListResponse)
 def list_pipeline_runs(db: Session = Depends(get_db)):
@@ -57,4 +72,3 @@ def get_pipeline_run(run_id: int, db: Session = Depends(get_db)):
         ended_at=run.ended_at,
         error_message=run.error_message,
     )
-        

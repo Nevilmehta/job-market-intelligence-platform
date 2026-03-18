@@ -17,7 +17,7 @@ class RejectionReasonListResponse(BaseModel):
 class RejectionJobItemResponse(BaseModel):
     id: int
     source: str
-    eternal_id: str|None
+    external_id: str|None
     error_reason: str
 
 class RejectionJobListResponse(BaseModel):

@@ -22,6 +22,24 @@ class AnalyticsRepository:
         self.db.query(SalaryTrend).delete()
         self.db.commit()
 
+    def delete_job_daily_counts_in_range(self, date_from: date, date_to: date):
+        (
+            self.db.query(JobDailyCount)
+            .filter(JobDailyCount.metric_date >= date_from)
+            .filter(JobDailyCount.metric_date <= date_to)
+            .delete()
+        )
+        self.db.commit()
+
+    def delete_salary_trends_in_range(self, date_from: date, date_to: date):
+        (
+            self.db.query(SalaryTrend)
+            .filter(SalaryTrend.metric_date >= date_from)
+            .filter(SalaryTrend.metric_date <= date_to)
+            .delete()
+        )
+        self.db.commit()
+
     def create_job_daily_count(self, metric_date: date, job_count: int):
         row = JobDailyCount(metric_date=metric_date, job_count=job_count)
         self.db.add(row)

@@ -125,6 +125,90 @@ class AnalyticsService:
             )
             raise
 
+    def backfill_analytics_for_date_range(self, date_from: date, date_to: date):
+        job_run = self.etl_job_run_repository.create_job_run(
+            job_name="backfill_analytics",
+            status="running"
+        )
+
+        try:
+            staging_jobs = self.staging_job_repository.get_staging_jobs_in_date_range(
+                date_from=date_from,
+                date_to=date_to
+            )
+
+            daily_counts = defaultdict(int)
+            salary_buckets = defaultdict(list)
+
+            for job in staging_jobs:
+                try:
+                    parsed_date = datetime.strptime(job.posted_date, "%Y-%m-%d").date()
+                except(ValueError, TypeError):
+                    continue
+
+                daily_counts[parsed_date] += 1
+
+                if job.salary_min is not None and job.salary_max is not None:
+                    midpoint_salary = (job.salary_min + job.salary_max) // 2
+                    salary_buckets[(parsed_date, job.salary_currency)].append(midpoint_salary)
+
+            self.analytics_repository.delete_job_daily_counts_in_range(
+                date_from=date_from,
+                date_to=date_to
+            )
+            self.analytics_repository.delete_salary_trends_in_range(
+                date_from=date_from,
+                date_to=date_to
+            )
+
+            daily_rows_created = 0
+            salary_trend_rows_created = 0
+
+            for metric_date, count in sorted(daily_counts.items()):
+                self.analytics_repository.create_job_daily_count(
+                    metric_date=metric_date,
+                    job_count=count
+                )
+                daily_rows_created += 1
+
+            for (metric_date, currency), salaries in sorted(salary_buckets.items()):
+                average_salary = sum(salaries) // len(salaries)
+
+                self.analytics_repository.create_salary_trend(
+                    metric_date=metric_date,
+                    average_salary=average_salary,
+                    currency=currency,
+                    job_count=len(salaries)
+                )
+                salary_trend_rows_created += 1
+
+            total_rows_created = daily_rows_created + salary_trend_rows_created
+
+            self.etl_job_run_repository.complete_job_run(
+                job_run=job_run,
+                status="success",
+                records_processed=total_rows_created,
+                records_failed=0
+            )
+
+            return {
+                "date_from": date_from,
+                "date_to": date_to,
+                "daily_metrics_created": daily_rows_created,
+                "salary_trend_rows_created": salary_trend_rows_created,
+                "message": "Analytics backfill completed successfully"
+            }
+
+        except Exception as exc:
+            self.etl_job_run_repository.complete_job_run(
+                job_run=job_run,
+                status="failed",
+                records_processed=0,
+                records_failed=0,
+                error_message=str(exc)
+            )
+            raise
+
     def get_job_daily_counts(self, date_from: date|None=None, date_to: date|None=None):
         return self.analytics_repository.get_job_daily_counts(
             date_from=date_from,

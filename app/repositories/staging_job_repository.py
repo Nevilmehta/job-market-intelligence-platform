@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from app.models.staging_job import StagingJob
+from datetime import date, datetime
 
 # this repository saves validated records
 class StagingJobRepository:
@@ -42,3 +43,24 @@ class StagingJobRepository:
         return (
             self.db.query(StagingJob).order_by(StagingJob.id.asc()).all()
         )
+
+    def get_staging_jobs_in_date_range(self, date_from: date, date_to: date):
+        rows = (
+            self.db.query(StagingJob)
+            .filter(StagingJob.posted_date.isnot(None))
+            .order_by(StagingJob.id.asc())
+            .all()
+        )
+
+        filtered_rows = []
+
+        for row in rows:
+            try: 
+                parsed_date = datetime.strptime(row.posted_date, "%Y-%m-%d").date()
+            except (ValueError, TypeError):
+                continue
+
+            if date_from <= parsed_date <= date_to:
+                filtered_rows.append(row)
+
+        return filtered_rows
