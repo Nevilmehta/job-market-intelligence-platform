@@ -31,3 +31,9 @@ class AnalyticsBackfillResponse(BaseModel):
     daily_metrics_created: int
     salary_trend_rows_created: int
     message: str
+
+# Celery-redis response model for task queuing
+class TaskQueuedResponse(BaseModel):
+    task_id: str
+    task_name: str
+    message: str
