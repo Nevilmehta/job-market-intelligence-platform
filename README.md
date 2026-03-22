@@ -38,3 +38,8 @@ Celery's prefork pool has compatibility issues on Windows, so I configured the w
 celery -A app.tasks.celery_app.celery_app worker --loglevel=info --pool=solo
 
 Integrated Celery and Redis to execute ETL and analytics workflows asynchronously, allowing validation, analytics generation, and backfill jobs to run outside the request-response cycle.
+
+“How did you make background jobs reliable?”
+
+You can say:
+“I used Celery with Redis for asynchronous pipeline execution, exposed task-status APIs using AsyncResult, and configured automatic retries with backoff for transient failures.”

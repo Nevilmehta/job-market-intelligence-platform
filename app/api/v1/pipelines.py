@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from celery.result import AsyncResult
 
 from app.core.database import get_db
 from app.schemas.pipeline import (
@@ -8,13 +9,15 @@ from app.schemas.pipeline import (
     ETLJobRunListResponse,
     ETLJobRunResponse,
     AnalyticsBackfillRequest,
-    AnalyticsBackfillResponse
+    AnalyticsBackfillResponse,
+    TaskStatusResponse
     )
 from app.services.validation_service import ValidationService
 from app.services.pipeline_service import PipelineService
 from app.tasks.analytics_tasks import generate_core_analytics_task
 from app.tasks.backfill_tasks import backfill_analytics_task
 from app.tasks.validation_tasks import validate_raw_jobs_task
+from app.tasks.celery_app import celery_app
 
 router = APIRouter(prefix="/pipelines", tags=["Pipelines"])
 # This route triggers the validation pipeline manually.
@@ -62,6 +65,25 @@ def backfill_analytics_async(request: AnalyticsBackfillRequest):
         task_id=task.id,
         task_name="backfill_analytics",
         message="Analytics backfill task queued successfully"
+    )
+
+@router.get("/tasks/{task_id}", response_model=TaskStatusResponse)
+def get_task_status(task_id: str):
+    task_result = AsyncResult(task_id, app=celery_app)
+
+    result= None
+    error= None
+
+    if task_result.state == "SUCCESS":
+        result = task_result.result
+    elif task_result.state == "FAILURE":
+        error = str(task_result.result)
+
+    return TaskStatusResponse(
+        task_id=task_id,
+        state=task_result.state,
+        result=result,
+        error=error
     )
 
 @router.get("/runs", response_model=ETLJobRunListResponse)

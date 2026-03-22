@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Any
 from datetime import date, datetime
 
 # This schema will be used for pipeline responses.
@@ -37,3 +38,9 @@ class TaskQueuedResponse(BaseModel):
     task_id: str
     task_name: str
     message: str
+
+class TaskStatusResponse(BaseModel):
+    task_id: str
+    state: str
+    result: Any | None
+    error: str | None
