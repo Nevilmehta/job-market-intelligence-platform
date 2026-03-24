@@ -56,3 +56,30 @@ So the flow becomes:
 Beat decides → Redis queues → Worker executes
 
 Configured Celery Beat to schedule recurring ETL and analytics workflows, enabling automated validation and nightly metric generation outside the request-response cycle.
+
+------------------------------------------------------------------
+To keep everything align with one command,(in docker)(keep in docker compose)
+requirements.text
+.dockerignore
+.env => localhost-db, localhost-redis
+Dockerfile
+docker-compose.yaml
+
+docker compose up --build
+docker compose down -v (for complete clean)
+docker ps
+docker compose ps
+docker compose ps -a
+docker compose up --build worker beat (if it wont start )
+docker compose logs -f api/worker/beat
+
+Why this works
+It:
+uses Python 3.12
+installs dependencies
+copies your project
+starts FastAPI
+
+Worker and Beat will reuse this same image, but with different commands.
+
+Containerized a multi-service backend platform with Docker Compose, orchestrating FastAPI, PostgreSQL, Redis, Celery workers, and Celery Beat for local development and scheduled ETL execution.

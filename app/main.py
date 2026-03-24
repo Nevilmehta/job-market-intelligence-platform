@@ -2,7 +2,16 @@ from fastapi import FastAPI
 from app.api.router import api_router
 from app.core.config import settings
 from app.core.database import Base, engine
-from app.models import RawJob, RejectedJob, ETLJobRun, StagingJob, TopCompany, JobDailyCount, TopSkill, SalaryTrend
+from app.models import (
+    ETLJobRun,
+    JobDailyCount,
+    RawJob,
+    RejectedJob,
+    SalaryTrend,
+    StagingJob,
+    TopCompany,
+    TopSkill
+    )
 
 app = FastAPI(
     title = settings.APP_NAME,
