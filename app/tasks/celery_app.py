@@ -1,5 +1,6 @@
 from celery import Celery
 from app.core.config import settings
+from celery.schedules import crontab
 
 celery_app = Celery(
     "job_market_tasks",
@@ -19,5 +20,16 @@ celery_app.conf.update(
     timezone="UTC",
     enable_utc=True,
     task_track_started=True,
-    result_expires=3600
+    result_expires=3600,
+    # name must match with the name u have used for task decorator
+    beat_schedule={
+        "validate-raw-jobs-every-10-minutes": {
+            "task": "tasks.validate_raw_jobs",
+            "schedule": crontab(minute="*/10")
+        },
+        "generate-core-analytics-nightly": {
+            "task": "tasks.generate_core_analytics",
+            "schedule": crontab(hour=2, minute=0)
+        }
+    }
 )

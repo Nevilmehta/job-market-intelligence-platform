@@ -43,3 +43,16 @@ Integrated Celery and Redis to execute ETL and analytics workflows asynchronousl
 
 You can say:
 “I used Celery with Redis for asynchronous pipeline execution, exposed task-status APIs using AsyncResult, and configured automatic retries with backoff for transient failures.”
+
+there are 2 processors now,
+1 is for worker and 1 is for beat
+celery -A app.tasks.celery_app.celery_app worker --loglevel=info
+celery -A app.tasks.celery_app.celery_app beat --loglevel=info
+
+In Beat logs, you’ll see messages like:
+Scheduler: Sending due task validate-raw-jobs-every-10-minutes
+Then in worker logs, you should see task execution.
+So the flow becomes:
+Beat decides → Redis queues → Worker executes
+
+Configured Celery Beat to schedule recurring ETL and analytics workflows, enabling automated validation and nightly metric generation outside the request-response cycle.
