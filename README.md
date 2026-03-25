@@ -106,3 +106,10 @@ Local
 .env.local → localhost
 Docker
 .env.docker → db / redis
+
+For unit testing,
+Why this is important
+This is already much better than only testing routes.
+If someone breaks salary parsing later, your tests will catch it.
+That is exactly why backend teams write tests.
+
