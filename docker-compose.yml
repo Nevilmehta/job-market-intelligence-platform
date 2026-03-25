@@ -5,7 +5,7 @@ services:
     ports: 
       - "8000:8000"
     env_file:
-      - .env
+      - .env.docker
     depends_on:
       - db
       - redis
@@ -35,7 +35,7 @@ services:
     build: .
     container_name: job_market_worker
     env_file: 
-      - .env
+      - .env.docker
     depends_on:
       - db
       - redis
@@ -47,7 +47,7 @@ services:
     build: .
     container_name: job_market_beat
     env_file: 
-      - .env
+      - .env.docker
     depends_on:
       - db
       - redis

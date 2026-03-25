@@ -90,6 +90,7 @@ alembic upgrade head
 alembic revision --autogenerate -m "initial schema"
 
 docker compose exec api alembic upgrade head
+docker compose exec api printenv DATABASE_URL
 
 to integrate with docker (alembic)
 
@@ -100,3 +101,8 @@ localhost-> db
 Outside Docker
 your laptop-> local postgres
 db-> localhost
+
+Local
+.env.local → localhost
+Docker
+.env.docker → db / redis
