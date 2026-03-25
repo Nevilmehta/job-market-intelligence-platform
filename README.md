@@ -83,3 +83,20 @@ starts FastAPI
 Worker and Beat will reuse this same image, but with different commands.
 
 Containerized a multi-service backend platform with Docker Compose, orchestrating FastAPI, PostgreSQL, Redis, Celery workers, and Celery Beat for local development and scheduled ETL execution.
+
+Alembic and migrations
+alembic init migrations
+alembic upgrade head
+alembic revision --autogenerate -m "initial schema"
+
+docker compose exec api alembic upgrade head
+
+to integrate with docker (alembic)
+
+Inside Docker 
+api container-> db container
+localhost-> db
+
+Outside Docker
+your laptop-> local postgres
+db-> localhost
