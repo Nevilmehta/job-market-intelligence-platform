@@ -3,113 +3,101 @@ Proper Backend Project: Internal Data Platform
 
 JOB MARKET INTELLIGENCE PLATFORM (Currently working and updating daily)
 
-A production-style internal platform that ingests data from external/internal sources, validates and stores raw data, runs ETL pipelines to produce analytics tables, exposes APIs for querying metrics/reports, and includes job orchestration, observability, testing, and containerized deployment.
+Built a Job Market Intelligence Platform that ingests, validates, transforms, and analyzes job data using FastAPI, PostgreSQL, Redis, Celery, and Alembic. Implemented ETL pipelines, async background processing, scheduled jobs, analytics APIs, data quality monitoring, and Docker-based multi-service deployment.
+---------------------------------------------------------------------------------------------------
+You built a mini data platform, which includes:
 
-After writing all this APIs,
-Client → API → pipeline runs immediately → response after completion
+✅ Backend system
+FastAPI APIs
+proper layered architecture
+✅ Data pipeline
+raw → validation → staging → analytics
+rejected data handling
+✅ SQL + analytics
+aggregations
+trends
+reporting tables
+✅ Async processing
+Celery + Redis
+background jobs
+retries
+task status
+✅ Scheduling
+Celery Beat (cron-style jobs)
+✅ Infra
+Docker Compose (multi-service setup)
+✅ Database maturity
+Alembic migrations (very important)
+✅ Quality layer
+data quality APIs
+pipeline run tracking
+✅ Testing (basic but correct)
+pytest setup
+unit + integration understanding
 
-After including Celery into this Application,
-Client → API → Celery task queued → immediate response
-                        ↓
-            Worker executes later
+----------------------------------------------------------------------------------------------------
 
-Docker for redis,
-FastAPI (local)
-   ↓
-Redis (Docker container)
-   ↓
-Celery worker (local)
+## What it does
 
-future architecute(we will build it later):
-[ FastAPI container ]
-[ Celery worker container ]
-[ Redis container ]
-[ Postgres container ]
-[ Celery beat container ]
-managed by docker-compose up
+This project collects job records, stores raw payloads, validates and stages clean records, generates analytics tables, and exposes reporting APIs for trends such as:
 
-start celery worker,
-celery -A app.tasks.celery_app.celery_app worker --loglevel=info
+- daily job posting volume
+- top hiring companies
+- most in-demand technologies
+- salary trends
+- data quality and rejection summaries
+- ETL pipeline run history
 
-prefork ❌	multiprocessing (breaks on Windows)
-solo ✅	single process (stable on Windows)
+## Core architecture
 
-Celery's prefork pool has compatibility issues on Windows, so I configured the worker to use the solo execution pool during development.
-celery -A app.tasks.celery_app.celery_app worker --loglevel=info --pool=solo
+- FastAPI for API layer
+- PostgreSQL for raw, staging, analytics, and operational tables
+- Redis for Celery broker/result backend
+- Celery for background pipelines
+- Celery Beat for scheduled execution
+- Alembic for schema migrations
+- Docker Compose for local multi-service orchestration
 
-Integrated Celery and Redis to execute ETL and analytics workflows asynchronously, allowing validation, analytics generation, and backfill jobs to run outside the request-response cycle.
+## Data flow
 
-“How did you make background jobs reliable?”
+Source -> Raw Ingestion -> Validation -> Staging -> Analytics -> API
 
-You can say:
-“I used Celery with Redis for asynchronous pipeline execution, exposed task-status APIs using AsyncResult, and configured automatic retries with backoff for transient failures.”
+## Main features
 
-there are 2 processors now,
-1 is for worker and 1 is for beat
-celery -A app.tasks.celery_app.celery_app worker --loglevel=info
-celery -A app.tasks.celery_app.celery_app beat --loglevel=info
+- raw job ingestion API
+- duplicate detection on ingestion
+- validation pipeline with rejected-record handling
+- staged clean job records
+- analytics generation for:
+  - daily job counts
+  - top companies
+  - top skills
+  - salary trends
+- quality summary APIs
+- ETL run tracking APIs
+- async execution with Celery
+- scheduled jobs with Celery Beat
+- manual analytics backfill for date ranges
 
-In Beat logs, you’ll see messages like:
-Scheduler: Sending due task validate-raw-jobs-every-10-minutes
-Then in worker logs, you should see task execution.
-So the flow becomes:
-Beat decides → Redis queues → Worker executes
-
-Configured Celery Beat to schedule recurring ETL and analytics workflows, enabling automated validation and nightly metric generation outside the request-response cycle.
-
-------------------------------------------------------------------
-To keep everything align with one command,(in docker)(keep in docker compose)
-requirements.text
-.dockerignore
-.env => localhost-db, localhost-redis
-Dockerfile
-docker-compose.yaml
-
-docker compose up --build
-docker compose down -v (for complete clean)
-docker ps
-docker compose ps
-docker compose ps -a
-docker compose up --build worker beat (if it wont start )
-docker compose logs -f api/worker/beat
-
-Why this works
-It:
-uses Python 3.12
-installs dependencies
-copies your project
-starts FastAPI
-
-Worker and Beat will reuse this same image, but with different commands.
-
-Containerized a multi-service backend platform with Docker Compose, orchestrating FastAPI, PostgreSQL, Redis, Celery workers, and Celery Beat for local development and scheduled ETL execution.
-
-Alembic and migrations
-alembic init migrations
-alembic upgrade head
-alembic revision --autogenerate -m "initial schema"
-
-docker compose exec api alembic upgrade head
-docker compose exec api printenv DATABASE_URL
-
-to integrate with docker (alembic)
-
-Inside Docker 
-api container-> db container
-localhost-> db
-
-Outside Docker
-your laptop-> local postgres
-db-> localhost
-
-Local
-.env.local → localhost
+Local development
+Create local environment config
+Start Postgres and Redis
+Run Alembic migrations
+Start FastAPI
+Start Celery worker
+Start Celery Beat
 Docker
-.env.docker → db / redis
 
-For unit testing,
-Why this is important
-This is already much better than only testing routes.
-If someone breaks salary parsing later, your tests will catch it.
-That is exactly why backend teams write tests.
+This project includes Docker Compose for:
 
+api
+db
+redis
+worker
+beat
+
+Run:
+docker compose up --build
+
+then apply migrations:
+docker compose exec api alembic upgrade head
